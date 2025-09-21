@@ -23,27 +23,6 @@ Code/
 └── README.md                      # Project documentation
 ```
 
-## Key Features
-
-### 1. **Paper-Aligned Architecture**
-- **TSCNN Model**: Processes 6 frames/hour with pairwise depth concatenation
-- **GRU Model**: Multi-layer GRU with attention mechanism for temporal feature extraction
-- **Feature Fusion**: 4D features from both branches concatenated before final regression
-
-### 2. **8:1:1 Data Split**
-- **Training Set**: 80% of data for model training
-- **Validation Set**: 10% of data for hyperparameter tuning and early stopping
-- **Test Set**: 10% of data for final performance evaluation
-
-### 3. **Consistent Data Processing**
-- **Persistent Scalers**: Save/load scalers for consistent train/inference preprocessing
-- **Image Normalization**: Built-in /255 normalization in TSCNN model
-- **Temporal Sequences**: 6-step time series windows matching paper specifications
-
-### 4. **Production Ready**
-- **Error Handling**: Robust file loading with graceful fallbacks
-- **Memory Optimization**: Efficient data loading for large datasets
-- **Comprehensive Evaluation**: Multiple metrics and visualizations
 
 ## Model Architecture
 
@@ -79,40 +58,40 @@ pip install tensorflow keras scikit-learn matplotlib pandas numpy opencv-python
 
 #### Multimodal Model Training
 ```bash
-python src/train_multimodal.py --dataset TuyereData/DataSetTrain_hourly --epochs 210 --batch-size 2 --learning-rate 0.0001
+python src/train_multimodal.py --dataset TuyereData/DataSetTrain_hourly --epochs 200 --batch-size 64 --learning-rate 0.0001
 ```
 
 #### Baseline Model Training
 ```bash
-python src/train_baseline_gru.py --dataset TuyereData/DataSet4X4Train_hour --epochs 200 --model-type gru --learning-rate 0.0001
+python src/train_baseline_gru.py --dataset TuyereData/DataSetTrain_hour --epochs 200 --model-type gru --learning-rate 0.0001
 ```
 
 ### Model Inference
 
 #### Multimodal Model Inference
 ```bash
-python src/infer_multimodal.py --dataset TuyereData/DataSetTrain_halfHourly --model-path Save_model/multimodal_cnn_gru_model.h5 --save-predictions
+python src/infer_multimodal.py --dataset TuyereData/DataSetTrain_Hourly --model-path Save_model/multimodal_cnn_gru_model.h5 --save-predictions
 ```
 
 #### Baseline Model Inference
 ```bash
-python src/infer_baseline_gru.py --dataset TuyereData/DataSetTrain_halfHourly --model-path Save_model/baseline_gru_model.h5 --save-predictions
+python src/infer_baseline_gru.py --dataset TuyereData/DataSetTrain_Hourly --model-path Save_model/baseline_gru_model.h5 --save-predictions
 ```
 
 ## Parameter Reference
 
 ### Training Parameters
 - `--dataset`: Path to dataset directory containing CSV and image files
-- `--epochs`: Number of training epochs (default: 210 for multimodal, 200 for baseline)
-- `--batch-size`: Batch size (default: 2)
+- `--epochs`: Number of training epochs
+- `--batch-size`: Batch size
 - `--learning-rate`: Learning rate (default: 0.0001)
 - `--train-ratio`: Training set ratio (default: 0.8 for 8:1:1 split)
 - `--model-type`: Model type for baseline (choices: gru, lstm)
 
 ### Inference Parameters
 - `--model-path`: Path to trained model file
-- `--scaler-path`: Path to saved scaler file (auto-generated during training)
-- `--output-dir`: Directory for saving results (default: results)
+- `--scaler-path`: Path to saved scaler file
+- `--output-dir`: Directory for saving results
 - `--save-predictions`: Flag to save prediction results to CSV
 
 ## Data Requirements
@@ -148,50 +127,15 @@ The model performance is evaluated using:
 - **Explained Variance Score**: Proportion of variance explained by the model
 - **Hit Rate**: Percentage of predictions within ±10°C of actual values
 
-## Output Results
 
-### Training Output
+## Training Output
 - **Model Checkpoints**: `logs/Training_*/` with best validation loss models
 - **Complete Models**: `Save_model/` with full trained models
 - **Training History**: Loss curves and performance metrics
 
-### Inference Output
-- **Prediction Results**: `results/*.csv` with predictions, actual values, and differences
-- **Visualizations**: 
-  - Time series plots comparing predictions vs actual values
-  - Scatter plots showing prediction accuracy
-  - Combined plots for training/validation/test sets
-- **Performance Metrics**: Console output with comprehensive evaluation
 
-## Technical Improvements
 
-### 1. **Consistent Image Processing**
-- Built-in normalization in TSCNN model eliminates train/inference inconsistencies
-- Robust image loading with placeholder handling for missing files
-
-### 2. **Aligned Model Architectures**
-- GRU models in multimodal and baseline use consistent architectures
-- Clear separation between feature extraction and final regression
-
-### 3. **Persistent Data Preprocessing**
-- Scalers saved during training and reused during inference
-- Prevents data preprocessing inconsistencies between training and deployment
-
-### 4. **Production-Ready Design**
-- 8:1:1 data split for proper model evaluation
-- Comprehensive error handling and logging
-- Memory-efficient data processing for large datasets
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing Images**: The system will use placeholder images and log warnings
-2. **Scaler File Not Found**: Training scripts automatically create scalers; ensure correct paths
-3. **Memory Issues**: Reduce batch size or use data generators for large datasets
-4. **Model Loading Errors**: Check custom layer compatibility and file paths
-
-### Performance Optimization
+## Performance Optimization
 
 1. **GPU Usage**: Modify `CUDA_VISIBLE_DEVICES` in scripts to use specific GPUs
 2. **Batch Size**: Increase batch size if memory allows for faster training
