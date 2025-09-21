@@ -3,10 +3,7 @@
 Multimodal prediction model training script
 Combines CNN features from tuyere images with GRU temporal features from blast furnace parameters
 
-Usage:
-python src/train_multimodal.py --dataset TuyereData/DataSet4X4Train_hour
 python src/train_multimodal.py --dataset TuyereData/DataSetTrain_hourly
-python src/train_multimodal.py --dataset TuyereData/DataSetTrain_halfHourly
 """
 
 import os
@@ -36,9 +33,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Multimodal prediction model training")
     parser.add_argument("-d", "--dataset", type=str, required=True,
                        help="Input dataset path")
-    parser.add_argument("--epochs", type=int, default=210,
+    parser.add_argument("--epochs", type=int, default=200,
                        help="Number of training epochs (default: 210)")
-    parser.add_argument("--batch-size", type=int, default=2,
+    parser.add_argument("--batch-size", type=int, default=64,
                        help="Batch size (default: 2)")
     parser.add_argument("--learning-rate", type=float, default=0.0001,
                        help="Learning rate (default: 0.0001)")
